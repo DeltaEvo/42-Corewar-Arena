@@ -29,6 +29,7 @@ async function start(buffers) {
       console.log("Exit", arguments);
     },
     start_op(op) {
+      console.log(op);
       self.postMessage({ op });
     }
   };
@@ -67,5 +68,6 @@ async function start(buffers) {
     init_process(process, offset, i);
     memory.set(buffer, mem_offset + offset);
   }
-  david_needs_to_work(vm);
+  setTimeout(() => david_needs_to_work(vm), 0);
+  return { MEM_SIZE };
 }

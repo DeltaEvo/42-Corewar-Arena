@@ -35,7 +35,7 @@ export class VM {
   }
 }
 
-function selectFile() {
+/*function selectFile() {
   const input = document.createElement("input");
   input.setAttribute("type", "file");
   input.click();
@@ -50,4 +50,4 @@ window.addEventListener("click", async () => {
   const vm = new VM();
   vm.loadChampion(arrayBuffer);
   await vm.start();
-});
+});*/
