@@ -20,7 +20,7 @@ const BORDER_COLOR = 0x00ff41;
 const COLORS = [0xffa500, 0xffff99, 0x9999ff, 0xff69b4];
 
 export default class Memory extends Object3D {
-  constructor(size, { wireframe = false, colorMode = true } = {}) {
+  constructor(size, { wireframe = false, colorMode = false } = {}) {
     super();
     this.size = size;
     const size_sqrt = Math.sqrt(size);

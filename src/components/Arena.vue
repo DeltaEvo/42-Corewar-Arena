@@ -12,6 +12,7 @@ const NEAR = 0.1;
 const FAR = 1000;
 
 export default {
+  props: ["wireframe", "colorMode"],
   mounted() {
     const { clientWidth: width, clientHeight: height } = this.$el;
 
@@ -39,6 +40,8 @@ export default {
     new OrbitControls(this.camera, this.$el);
 
     this.scene = window.scene = new Arena();
+    this.scene.memory.wireframe = this.wireframe;
+    this.scene.memory.colorMode = this.colorMode;
 
     this.render();
   },
@@ -46,6 +49,14 @@ export default {
     render() {
       this.raf = requestAnimationFrame(this.render);
       this.renderer.render(this.scene, this.camera);
+    }
+  },
+  watch: {
+    wireframe(val) {
+      this.scene.memory.wireframe = val;
+    },
+    colorMode(val) {
+      this.scene.memory.colorMode = val;
     }
   },
   destroyed() {

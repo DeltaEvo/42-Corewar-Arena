@@ -2,14 +2,14 @@ self.addEventListener("message", msg => {
   const { data } = msg;
   switch (data.topic) {
     case "start":
-      start(data.buffers).then(res => self.postMessage(res));
+      start(data.url, data.buffers).then(res => self.postMessage(res));
       break;
   }
 });
 
 const decoder = new TextDecoder();
 
-async function start(buffers) {
+async function start(url, buffers) {
   const wmemory = new WebAssembly.Memory({
     initial: 256
   });
@@ -34,8 +34,9 @@ async function start(buffers) {
     }
   };
 
-  const { instance } = await WebAssembly.instantiateStreaming(
-    fetch("/vm.wasm"),
+  // Bintray dont set mime type so we can't use instantiateStreaming
+  const { instance } = await WebAssembly.instantiate(
+    await (await fetch(url)).arrayBuffer(),
     {
       env
     }

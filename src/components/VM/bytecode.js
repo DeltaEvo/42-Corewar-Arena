@@ -12,16 +12,18 @@ export function readHeader(view) {
     throw new Error(`Invalid magic: ${view.getUint32(offset)}`);
   offset += 4;
 
-  const name = decoder.decode(view.buffer.slice(offset, offset + NAME_LENGTH));
+  const name = decoder
+    .decode(view.buffer.slice(offset, offset + NAME_LENGTH))
+    .replace(/\0*$/, "");
   offset += NAME_LENGTH;
   offset += NAME_PADDING;
 
   const size = view.getUint32(offset);
   offset += 4;
 
-  const comment = decoder.decode(
-    view.buffer.slice(offset, offset + COMMENT_LENGTH)
-  );
+  const comment = decoder
+    .decode(view.buffer.slice(offset, offset + COMMENT_LENGTH))
+    .replace(/\0*$/, "");
   offset += COMMENT_LENGTH;
   offset += COMMENT_PADDING;
 
