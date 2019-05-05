@@ -1,6 +1,11 @@
 <template>
   <div class="running-vm">
-    <arena :wireframe="wireframe" :colorMode="colorMode" class="arena"></arena>
+    <arena
+      :wireframe="wireframe"
+      :colorMode="colorMode"
+      class="arena"
+      :cycles="vm.cycles"
+    ></arena>
     <section class="infos">
       <button @click="wireframe = !wireframe">Wireframe</button>
       <button @click="colorMode = !colorMode">Color Mode</button>
@@ -11,6 +16,7 @@
 <script>
 import Arena from "../Arena.vue";
 export default {
+  props: ["vm"],
   data() {
     return {
       wireframe: false,

@@ -7,7 +7,8 @@ import {
   Vector2,
   LineBasicMaterial,
   LineSegments,
-  CanvasTexture
+  CanvasTexture,
+  Vector3
 } from "three";
 import { WireframeGeometry } from "./WireframeGeometry";
 
@@ -42,8 +43,6 @@ export default class Memory extends Object3D {
 
     this.wireframe = wireframe;
     this.colorMode = colorMode;
-
-    this.set(0, COLORS[0], 0xff);
   }
 
   _buildGeometry() {
@@ -150,5 +149,28 @@ export default class Memory extends Object3D {
     this.geometry.faces[i * 2].materialIndex = materialIndex;
     this.geometry.faces[i * 2 + 1].materialIndex = materialIndex;
     this.geometry.elementsNeedUpdate = true;
+  }
+
+  placeObject(object, i) {
+    const minor = ((i % this.majorSegments) / this.majorSegments) * Math.PI * 2;
+    const major =
+      (((i / this.majorSegments) | 0) / this.minorSegments) * Math.PI * 2;
+
+    const x = (MAJOR + MINOR * Math.cos(minor)) * Math.cos(major);
+    const y = (MAJOR + MINOR * Math.cos(minor)) * Math.sin(major);
+    const z = MINOR * Math.sin(minor);
+    object.position.x = x;
+    object.position.y = y;
+    object.position.z = z;
+
+    const normal = new Vector3(
+      MINOR * Math.cos(minor) * Math.cos(major),
+      MINOR * Math.cos(minor) * Math.sin(major),
+      MINOR * Math.sin(minor)
+    );
+
+    object.position.set(0, 0, 0);
+    object.lookAt(normal);
+    object.position.set(x, y, z);
   }
 }

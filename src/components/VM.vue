@@ -1,5 +1,5 @@
 <template>
-  <running-VM v-if="vm.started" />
+  <running-VM :vm="vm" v-if="vm.started" />
   <setup-VM :vm="vm" v-else />
 </template>
 

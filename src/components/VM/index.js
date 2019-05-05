@@ -5,6 +5,7 @@ export default class VM {
   constructor() {
     this.champions = [];
     this.started = false;
+    this.cycles = [];
   }
   loadChampion(buffer) {
     if (this.started) throw new Error("VM Already started");
@@ -19,7 +20,7 @@ export default class VM {
   async start(url) {
     this.worker = new Worker();
     this.worker.onmessage = msg => {
-      console.log("MSG", msg.data);
+      if (Array.isArray(msg.data)) this.cycles.push(msg.data);
     };
     const buffers = this.champions.map(({ buffer }) => buffer);
     const { MEM_SIZE } = await new Promise(resolve => {

@@ -12,7 +12,7 @@ const NEAR = 0.1;
 const FAR = 1000;
 
 export default {
-  props: ["wireframe", "colorMode"],
+  props: ["wireframe", "colorMode", "cycles"],
   mounted() {
     const { clientWidth: width, clientHeight: height } = this.$el;
 
@@ -43,11 +43,22 @@ export default {
     this.scene.memory.wireframe = this.wireframe;
     this.scene.memory.colorMode = this.colorMode;
 
+    this.cycle = 0;
     this.render();
   },
   methods: {
-    render() {
+    render(timestamp) {
       this.raf = requestAnimationFrame(this.render);
+      timestamp = performance.now();
+      if (
+        (!this.last_cycle || timestamp - this.last_cycle > 1000 / 60) &&
+        this.cycle < this.cycles.length
+      ) {
+        this.scene.run(this.cycles[this.cycle]);
+        this.last_cycle = timestamp;
+        this.cycle++;
+        console.log("Cycle", this.cycle);
+      }
       this.renderer.render(this.scene, this.camera);
     }
   },
