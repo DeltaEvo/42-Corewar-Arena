@@ -5,7 +5,7 @@
 <script>
 import { WebGLRenderer, PerspectiveCamera } from "three";
 import Arena from "./Arena/Arena.js";
-import OrbitControls from "./Arena/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const FOV = 70;
 const NEAR = 0.1;
