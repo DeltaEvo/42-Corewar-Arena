@@ -35,19 +35,22 @@ export default {
 </script>
 
 <style lang="stylus">
+@import "../stylus/theme.styl"
 .circle {
 	width: 100%;
+  border-color: $color.primary;
+
 	.add {
 		width: 25%;
 		border-radius: 50%;
-		border: 2px solid tomato;
+		border: 2px solid $color.primary;
 
 		.icon {
 			box-sizing: border-box;
 			padding: 20%;
 			width: 100%;
 			height: 100%;
-			color: tomato;
+			color: $color.primary;
 		}
 	}
 }

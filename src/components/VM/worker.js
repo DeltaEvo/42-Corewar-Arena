@@ -10,20 +10,20 @@ self.addEventListener("message", msg => {
 const decoder = new TextDecoder();
 
 async function start(url, buffers) {
-  const wmemory = new WebAssembly.Memory({
-    initial: 256
+  const memory = new WebAssembly.Memory({
+    initial: 2
   });
 
   const vm = {
     cycle: []
   };
 
-  const memory = new Uint8Array(wmemory.buffer);
-
   const env = {
-    memory: wmemory,
+    memory,
     write(fd, address, size) {
-      const msg = decoder.decode(memory.slice(address, address + size));
+      const msg = decoder.decode(
+        new Uint8Array(memory.buffer).slice(address, address + size)
+      );
       console.log("Write", msg);
     },
     printf() {
@@ -46,9 +46,37 @@ async function start(url, buffers) {
         opcode
       });
     },
+    hook_process_spawn(process, offset) {
+      vm.cycle.push({
+        action: "spawn",
+        process: (process - vm.processes_offset) / vm.process_size,
+        offset
+      });
+    },
+    hook_process_write_memory(process, offset, size) {
+      const buffer = new Uint8Array(size);
+      const mem = new Uint8Array(memory.buffer, vm.mem_offset, vm.MEM_SIZE);
+      while (offset < 0) offset += vm.MEM_SIZE;
+      offset %= vm.MEM_SIZE;
+      if (offset + size > vm.MEM_SIZE) {
+        const diff = vm.MEM_SIZE - offset;
+        buffer.set(mem.slice(offset, vm.MEM_SIZE), 0);
+        buffer.set(mem.slice(0, size - diff), diff);
+      } else buffer.set(mem.slice(offset, offset + size));
+      new Uint8Array(memory.buffer).set(buffer, vm.mem_offset + offset);
+      vm.cycle.push({
+        action: "write_memory",
+        process: (process - vm.processes_offset) / vm.process_size,
+        from: offset,
+        memory: buffer
+      });
+    },
     hook_cycle_end() {
       self.postMessage(vm.cycle);
       vm.cycle = [];
+    },
+    before_growth(size) {
+      console.log("Before growth", size);
     }
   };
 
@@ -67,6 +95,7 @@ async function start(url, buffers) {
     get_vm_mem,
     get_vm_vec,
     get_vm_vec_processes,
+    get_vm_vec_capacity,
     add_process,
     init_process,
     david_needs_to_work
@@ -87,6 +116,7 @@ async function start(url, buffers) {
   console.log(memory.byteLength);
 
   const vec = get_vm_vec(vm.pointer);
+  console.log("Capacity", get_vm_vec_capacity(vec));
   for (const [i, abuffer] of buffers.entries()) {
     const buffer = new Uint8Array(abuffer);
     const process = add_process(vec);
@@ -94,10 +124,20 @@ async function start(url, buffers) {
     init_process(process, offset, i);
     vm.cycle.push({
       action: "spawn",
+      process: i,
       offset
     });
-    memory.set(buffer, vm.mem_offset + offset);
+    vm.cycle.push({
+      action: "write_memory",
+      process: i,
+      from: offset,
+      memory: buffer
+    });
+    new Uint8Array(memory.buffer).set(buffer, vm.mem_offset + offset);
   }
-  setTimeout(() => david_needs_to_work(vm.pointer), 0);
+  function loop() {
+    if (david_needs_to_work(vm.pointer, 1)) setTimeout(loop, 1);
+  }
+  loop();
   return { MEM_SIZE };
 }

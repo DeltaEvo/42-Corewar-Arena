@@ -9,7 +9,7 @@ export function readHeader(view) {
   let offset = 0;
 
   if (view.getUint32(offset) != COREWAR_EXEC_MAGIC)
-    throw new Error(`Invalid magic: ${view.getUint32(offset)}`);
+    throw new Error(`Invalid magic: ${view.getUint32(offset).toString(16)}`);
   offset += 4;
 
   const name = decoder

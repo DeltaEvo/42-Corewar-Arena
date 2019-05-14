@@ -12,7 +12,7 @@ const NEAR = 0.1;
 const FAR = 1000;
 
 export default {
-  props: ["wireframe", "colorMode", "cycles"],
+  props: ["wireframe", "colorMode", "cycles", "cyclesPerSecond"],
   mounted() {
     const { clientWidth: width, clientHeight: height } = this.$el;
 
@@ -37,7 +37,8 @@ export default {
     });
     this.observer.observe(this.$el);
 
-    new OrbitControls(this.camera, this.$el);
+    const controls = new OrbitControls(this.camera, this.$el);
+    controls.maxDistance = 100;
 
     this.scene = window.scene = new Arena();
     this.scene.memory.wireframe = this.wireframe;
@@ -46,20 +47,27 @@ export default {
     this.cycle = 0;
     this.render();
   },
+  computed: {
+    cycleMs() {
+      return 1000 / this.cyclesPerSecond;
+    }
+  },
   methods: {
     render(timestamp) {
       this.raf = requestAnimationFrame(this.render);
       timestamp = performance.now();
-      if (
-        (!this.last_cycle || timestamp - this.last_cycle > 1000 / 60) &&
-        this.cycle < this.cycles.length
+      for (
+        let i = 0;
+        (i < (timestamp - this.last_cycle) / this.cycleMs) | 0 &&
+        this.cycles.length;
+        i++
       ) {
-        this.scene.run(this.cycles[this.cycle]);
-        this.last_cycle = timestamp;
-        this.cycle++;
-        console.log("Cycle", this.cycle);
+        this.scene.run(this.cycles.shift());
+        this.$emit("cycle");
       }
+      this.$emit("processes", this.scene.processes.length);
       this.renderer.render(this.scene, this.camera);
+      this.last_cycle = timestamp;
     }
   },
   watch: {

@@ -16,3 +16,17 @@ Vue.config.productionTip = false;
 new Vue({
   render: h => h(App)
 }).$mount("#app");
+
+(function() {
+  var script = document.createElement("script");
+  script.onload = function() {
+    var stats = new window.Stats();
+    document.body.appendChild(stats.dom);
+    requestAnimationFrame(function loop() {
+      stats.update();
+      requestAnimationFrame(loop);
+    });
+  };
+  script.src = "//cdn.jsdelivr.net/gh/Kevnz/stats.js/build/stats.min.js";
+  document.head.appendChild(script);
+})();

@@ -28,7 +28,7 @@ export default {
 .circle-layout {
 	position: relative;
 	border-radius: 50%;
-	border: solid 5px tomato;
+	border: solid 5px;
 	box-sizing: border-box;
 
 	& > div {

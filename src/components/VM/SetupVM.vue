@@ -2,11 +2,7 @@
   <div class="vm-setup">
     <section class="selector">
       <div>
-        <champion-selector
-          :max="6"
-          :champions="vm.champions"
-          @load="d => vm.loadChampion(d)"
-        ></champion-selector>
+        <champion-selector :max="6" :champions="vm.champions" @load="load" />
       </div>
     </section>
     <div class="play">
@@ -23,12 +19,14 @@
           <versions v-model="version" />
         </div>
       </div>
+      <championship-selector @load="load" />
     </section>
   </div>
 </template>
 
 <script>
 import ChampionSelector from "../ChampionSelector.vue";
+import ChampionshipSelector from "../ChampionshipSelector.vue";
 import Ratio from "../Ratio.vue";
 import Versions from "../Versions.vue";
 
@@ -43,10 +41,18 @@ export default {
     start() {
       if (this.version.url) this.vm.start(this.version.url);
       else alert("No version selected");
+    },
+    load(buffer) {
+      try {
+        this.vm.loadChampion(buffer);
+      } catch (e) {
+        alert(e);
+      }
     }
   },
   components: {
     ChampionSelector,
+    ChampionshipSelector,
     Ratio,
     Versions
   }
@@ -54,6 +60,7 @@ export default {
 </script>
 
 <style lang="stylus">
+@import "../../stylus/theme.styl"
 .vm-setup {
   display: flex;
   height: 100vh;
@@ -82,14 +89,14 @@ export default {
       display: block;
       width: 100%;
       height: 100%;
-      border: 2px solid tomato;
-      background: white;
+      border: 2px solid $color.primary;
+      background: $color.background;
       border-radius: 50%;
       padding: 0;
       box-sizing: border-box;
 
       & > .icon {
-        color: tomato;
+        color: $color.primary;
         width: 100%;
         height: 100%;
         padding: 30%;
@@ -110,7 +117,7 @@ export default {
 
   & > .panel {
     width: 30%;
-    background: tomato;
+    background: $color.primary;
     padding: 32px;
     box-sizing: border-box;
     color: white;
