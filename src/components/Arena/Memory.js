@@ -18,7 +18,7 @@ const RATIO = 2;
 
 const BORDER_COLOR = 0x00ff41;
 
-export const COLORS = [0xffa500, 0xffff99, 0x9999ff, 0xff69b4];
+export const COLORS = [0x33c47f, 0xff6950, 0x4180db, 0xa061d1];
 
 export default class Memory extends Object3D {
   constructor(size, { wireframe = false, colorMode = false } = {}) {
@@ -91,7 +91,7 @@ export default class Memory extends Object3D {
       context.fillRect(0, 0, canvas.width, canvas.height);
       context.font = `${canvas.height / 3}px sans-serif`;
       context.textAlign = "center";
-      context.fillStyle = "#00ff41";
+      context.fillStyle = "white";
       context.fillText(
         `0x${i.toString(16)}`,
         canvas.width / 2,
@@ -156,21 +156,22 @@ export default class Memory extends Object3D {
     const major =
       (((i / this.majorSegments) | 0) / this.minorSegments) * Math.PI * 2;
 
-    const x = (MAJOR + MINOR * Math.cos(minor)) * Math.cos(major);
-    const y = (MAJOR + MINOR * Math.cos(minor)) * Math.sin(major);
-    const z = MINOR * Math.sin(minor);
-    object.position.x = x;
-    object.position.y = y;
-    object.position.z = z;
-
     const normal = new Vector3(
       MINOR * Math.cos(minor) * Math.cos(major),
       MINOR * Math.cos(minor) * Math.sin(major),
       MINOR * Math.sin(minor)
     );
 
-    object.position.set(0, 0, 0);
-    object.lookAt(normal);
-    object.position.set(x, y, z);
+    if (object) {
+      const x = (MAJOR + MINOR * Math.cos(minor)) * Math.cos(major);
+      const y = (MAJOR + MINOR * Math.cos(minor)) * Math.sin(major);
+      const z = MINOR * Math.sin(minor);
+
+      object.position.set(0, 0, 0);
+      object.lookAt(normal);
+      object.position.set(x, y, z);
+    }
+
+    return normal;
   }
 }

@@ -39,6 +39,13 @@ async function start(url, buffers) {
         diff
       });
     },
+    hook_process_jump(process, offset) {
+      vm.cycle.push({
+        action: "jump",
+        process: (process - vm.processes_offset) / vm.process_size,
+        offset
+      });
+    },
     hook_process_wait_opcode(process, opcode) {
       vm.cycle.push({
         action: "wait_opcode",
@@ -46,10 +53,11 @@ async function start(url, buffers) {
         opcode
       });
     },
-    hook_process_spawn(process, offset) {
+    hook_process_spawn(process, parent, offset) {
       vm.cycle.push({
         action: "spawn",
         process: (process - vm.processes_offset) / vm.process_size,
+        parent: (parent - vm.processes_offset) / vm.process_size,
         offset
       });
     },
@@ -71,6 +79,12 @@ async function start(url, buffers) {
         memory: buffer
       });
     },
+    hook_cycle_to_die(value) {
+      vm.cycle.push({
+        action: "cycle_to_die",
+        value
+      });
+    },
     hook_cycle_end() {
       self.postMessage(vm.cycle);
       vm.cycle = [];
@@ -90,6 +104,7 @@ async function start(url, buffers) {
 
   const {
     get_vm_mem_size,
+    get_cycle_to_die,
     get_process_size,
     create_vm,
     get_vm_mem,
@@ -135,6 +150,10 @@ async function start(url, buffers) {
     });
     new Uint8Array(memory.buffer).set(buffer, vm.mem_offset + offset);
   }
+  vm.cycle.push({
+    action: "cycle_to_die",
+    value: get_cycle_to_die()
+  });
   function loop() {
     if (david_needs_to_work(vm.pointer, 1)) setTimeout(loop, 1);
   }

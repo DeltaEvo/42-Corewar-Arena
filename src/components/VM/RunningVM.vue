@@ -7,12 +7,18 @@
       :cycles="vm.cycles"
       :cyclesPerSecond="cyclesPerSecond"
       @cycle="cycle++"
+      @cycleDie="cycleDie"
       @processes="value => (processes = value)"
     ></arena>
     <section class="infos">
+      <circle-progress
+        class="cycles"
+        :value="(((cycle - lastCycleDie) % cycleToDie) / cycleToDie) * 100"
+      >
+        Cycle {{ cycle }}
+      </circle-progress>
       <button @click="wireframe = !wireframe">Wireframe</button>
       <button @click="colorMode = !colorMode">Color Mode</button>
-      <p>Cycle {{ cycle }}</p>
       <button @click="cyclesPerSecond += 10">+</button>
       <p>
         Cycles per second {{ currentCyclesPerSecond }}/{{ cyclesPerSecond }}
@@ -27,6 +33,8 @@
 
 <script>
 import Arena from "../Arena.vue";
+import CircleProgress from "../CircleProgress";
+
 export default {
   props: ["vm"],
   data() {
@@ -34,8 +42,10 @@ export default {
       wireframe: false,
       colorMode: false,
       cycle: 0,
+      lastCycleDie: 0,
+      cycleToDie: 1,
       currentCyclesPerSecond: 0,
-      cyclesPerSecond: 400,
+      cyclesPerSecond: 0,
       processes: 0
     };
   },
@@ -47,8 +57,16 @@ export default {
       last = this.cycle;
     }, 1000 / sampling);
   },
+  methods: {
+    cycleDie(value) {
+      console.log("CycleDie", value);
+      this.lastCycleDie = this.cycle;
+      this.cycleToDie = value;
+    }
+  },
   components: {
-    Arena
+    Arena,
+    CircleProgress
   }
 };
 </script>
@@ -61,13 +79,16 @@ export default {
 	overflow: hidden;
 	display: flex;
 
-	& > .arena {
-		width: 80%;
-	}
 	& > .infos {
 		width: 20%;
+    max-width: 200px;
 		background: $color.primary;
     color: white;
+    padding: 8px;
+
+    & >.cycles {
+      margin: 15%;
+    }
 	}
 }
 </style>

@@ -2,7 +2,7 @@
   <div class="vm-setup">
     <section class="selector">
       <div>
-        <champion-selector :max="6" :champions="vm.champions" @load="load" />
+        <champion-selector :max="4" :champions="vm.champions" @load="load" />
       </div>
     </section>
     <div class="play">
