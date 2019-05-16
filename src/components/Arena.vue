@@ -9,6 +9,8 @@ import { loadModels } from "./Arena/Models.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { update as tweenUpdate } from "es6-tween";
 
+import ResizeObserver from "resize-observer-polyfill";
+
 const FOV = 70;
 const NEAR = 0.1;
 const FAR = 1000;

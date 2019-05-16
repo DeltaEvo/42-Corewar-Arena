@@ -79,9 +79,12 @@ export default {
 	overflow: hidden;
 	display: flex;
 
+  & > .arena {
+    width: calc(100% - 200px);
+  }
+
 	& > .infos {
-		width: 20%;
-    max-width: 200px;
+		width: 200px;
 		background: $color.primary;
     color: white;
     padding: 8px;
