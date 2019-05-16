@@ -45,7 +45,7 @@ export default {
       lastCycleDie: 0,
       cycleToDie: 1,
       currentCyclesPerSecond: 0,
-      cyclesPerSecond: 0,
+      cyclesPerSecond: 50,
       processes: 0
     };
   },

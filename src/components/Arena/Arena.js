@@ -162,7 +162,7 @@ export default class Arena extends Scene {
         process.pc += action.diff;
         process.pc %= 4096;
         process.tween.start(time);
-      } else if (action.action === "wait_opcode") {
+      } else if (action.action === "read_opcode") {
         const process = this.processes[action.process];
         if (INSTRUCTIONS.has(action.opcode)) {
           const { name } = INSTRUCTIONS.get(action.opcode);

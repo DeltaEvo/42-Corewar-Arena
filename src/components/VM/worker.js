@@ -11,7 +11,7 @@ const decoder = new TextDecoder();
 
 async function start(url, buffers) {
   const memory = new WebAssembly.Memory({
-    initial: 2
+    initial: 44 // TODO: reset to 2
   });
 
   const vm = {
@@ -32,23 +32,25 @@ async function start(url, buffers) {
     exit() {
       console.log("Exit", arguments);
     },
-    hook_process_adv(process, diff) {
+    hook_process_adv(_vm, process, diff) {
       vm.cycle.push({
         action: "adv",
         process: (process - vm.processes_offset) / vm.process_size,
         diff
       });
     },
-    hook_process_jump(process, offset) {
-      vm.cycle.push({
-        action: "jump",
-        process: (process - vm.processes_offset) / vm.process_size,
-        offset
-      });
+    hook_process_jump(_vm, process, _try, offset) {
+      if (offset) {
+        vm.cycle.push({
+          action: "jump",
+          process: (process - vm.processes_offset) / vm.process_size,
+          offset
+        });
+      }
     },
-    hook_process_wait_opcode(process, opcode) {
+    hook_process_read_opcode(process, opcode) {
       vm.cycle.push({
-        action: "wait_opcode",
+        action: "read_opcode",
         process: (process - vm.processes_offset) / vm.process_size,
         opcode
       });
@@ -61,7 +63,7 @@ async function start(url, buffers) {
         offset
       });
     },
-    hook_process_write_memory(process, offset, size) {
+    hook_process_memory_write(process, offset, size) {
       const buffer = new Uint8Array(size);
       const mem = new Uint8Array(memory.buffer, vm.mem_offset, vm.MEM_SIZE);
       while (offset < 0) offset += vm.MEM_SIZE;
@@ -88,9 +90,7 @@ async function start(url, buffers) {
     hook_cycle_end() {
       self.postMessage(vm.cycle);
       vm.cycle = [];
-    },
-    before_growth(size) {
-      console.log("Before growth", size);
+      return true;
     }
   };
 
@@ -110,7 +110,6 @@ async function start(url, buffers) {
     get_vm_mem,
     get_vm_vec,
     get_vm_vec_processes,
-    get_vm_vec_capacity,
     add_process,
     init_process,
     david_needs_to_work
@@ -131,7 +130,6 @@ async function start(url, buffers) {
   console.log(memory.byteLength);
 
   const vec = get_vm_vec(vm.pointer);
-  console.log("Capacity", get_vm_vec_capacity(vec));
   for (const [i, abuffer] of buffers.entries()) {
     const buffer = new Uint8Array(abuffer);
     const process = add_process(vec);
@@ -155,7 +153,7 @@ async function start(url, buffers) {
     value: get_cycle_to_die()
   });
   function loop() {
-    if (david_needs_to_work(vm.pointer, 1)) setTimeout(loop, 1);
+    if (!david_needs_to_work(vm.pointer, 1)) setTimeout(loop, 1);
   }
   loop();
   return { MEM_SIZE };
