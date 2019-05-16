@@ -24,6 +24,7 @@ export default {
       canvas: this.$el,
       antialias: true
     });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
 
     this.renderer.setSize(width, height);
     this.$el.style = "";
