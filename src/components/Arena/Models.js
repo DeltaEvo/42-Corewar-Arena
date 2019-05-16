@@ -1,10 +1,7 @@
 import { MeshBasicMaterial, DoubleSide } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import TDSLoader from "three/examples/js/loaders/TDSLoader";
 
 const gltf = new GLTFLoader();
-gltf.setResourcePath("/models/");
-const tds = new TDSLoader();
 
 function load(loader, path, resourcePath) {
   return new Promise((resolve, reject) => {
@@ -13,13 +10,13 @@ function load(loader, path, resourcePath) {
   });
 }
 
-function transformGltf(scale) {
+function transformGltf(scale = 1) {
   return ({ scene, animations }) => {
     const [object] = scene.children;
     scene.dispose();
 
     object.traverse(object => {
-      if (object.material) {
+      if (object.material && object.material.isShaderMaterial) {
         object.material = new MeshBasicMaterial({
           side: DoubleSide,
           depthWrite: false,
@@ -43,7 +40,9 @@ export async function loadModels() {
     load(gltf, "/models/ring_yellow/scene.gltf", "/models/ring_yellow/").then(
       transformGltf(0.125)
     ),
-    load(tds, "/process.3ds")
+    load(gltf, "/models/process.glb")
+      .then(transformGltf(0.055))
+      .then(({ object }) => object)
   ]);
 
   return {

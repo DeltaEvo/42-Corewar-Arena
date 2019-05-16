@@ -232,14 +232,13 @@ export default class Arena extends Scene {
     const object = this.models.process.clone();
 
     for (const mesh of object.children) {
-      if (mesh.material.name === "Orange") {
+      if (mesh.material.name === "Orange-effect") {
         mesh.material = mesh.material.clone();
         mesh.material.color.set(color);
       }
     }
 
     object.rotateZ(Math.PI);
-    object.scale.multiplyScalar(0.055);
     return object;
   }
 
