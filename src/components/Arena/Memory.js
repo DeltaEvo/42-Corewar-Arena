@@ -152,6 +152,7 @@ export default class Memory extends Object3D {
   }
 
   placeObject(object, i) {
+    i %= this.size;
     const minor = ((i % this.majorSegments) / this.majorSegments) * Math.PI * 2;
     const major =
       (((i / this.majorSegments) | 0) / this.minorSegments) * Math.PI * 2;

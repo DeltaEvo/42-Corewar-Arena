@@ -5,6 +5,7 @@
       :colorMode="colorMode"
       class="arena"
       :cycles="vm.cycles"
+      :champions="vm.champions"
       :cyclesPerSecond="cyclesPerSecond"
       @cycle="cycle++"
       @cycleDie="cycleDie"

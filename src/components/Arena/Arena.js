@@ -1,4 +1,9 @@
-import { Scene, AmbientLight, Color, AnimationMixer } from "three";
+import {
+  Scene,
+  AnimationMixer,
+  DirectionalLight,
+  MeshPhongMaterial
+} from "three";
 import Background from "./Background";
 
 import Memory, { COLORS } from "./Memory";
@@ -109,26 +114,33 @@ const INSTRUCTIONS = new Map([
   ]
 ]);
 
+const LIGHTS = [{ x: 0, y: 0, z: 100 }, { x: 0, y: 0, z: -100 }];
+
 export default class Arena extends Scene {
-  constructor(models) {
+  constructor(models, champions) {
     super();
 
     this.memory = new Memory(4096);
     this.add(this.memory);
-    this.add(new AmbientLight());
+    for (const position of LIGHTS) {
+      const light = new DirectionalLight(0xffffff);
+      Object.assign(light.position, position);
+      this.add(light);
+    }
     this.add(new Background());
     this.processes = [];
     this.mixers = [];
 
     this.models = models;
-    this.background = new Color(0x404040);
+    this.champions = champions;
   }
 
   updateTime(delta) {
     for (const mixer of this.mixers) mixer.update(delta / 10);
   }
 
-  run(cycle, time, onUnhandled = () => {}) {
+  run(cycle, time, onUnhandled = () => {}, onLive = () => {}) {
+    //console.log(cycle.length)
     for (const action of cycle) {
       if (action.action === "spawn") {
         const color =
@@ -167,7 +179,7 @@ export default class Arena extends Scene {
         if (INSTRUCTIONS.has(action.opcode)) {
           const { name } = INSTRUCTIONS.get(action.opcode);
 
-          console.log("Run", name);
+          //console.log("Run", name);
           if (name === "st") {
             const ring = this.models.ring_yellow.object.clone();
             const normal = this.memory.placeObject(ring, process.pc);
@@ -205,7 +217,7 @@ export default class Arena extends Scene {
               .to(
                 {
                   position: process.object.position.clone().add(normal),
-                  scale: scale.clone().multiplyScalar(2)
+                  scale: scale.clone().multiplyScalar(1.5)
                 },
                 800
               )
@@ -213,7 +225,51 @@ export default class Arena extends Scene {
               .on("stop", end)
               .start(time);
           }
-        } else console.log("Unknown instruction", action.opcode);
+        } //else console.log("Unknown instruction", action.opcode);
+      } else if (action.action === "live") {
+        const process = this.processes[action.process];
+
+        const heart = this.models.heart.clone();
+        if (action.player >= 1 && action.player <= this.champions.length) {
+          heart.children[0].material = new MeshPhongMaterial({
+            color: this.processes[action.player - 1].color
+          });
+          onLive(action.player - 1);
+        }
+        const normal = this.memory.placeObject(heart, process.pc);
+        const scale = heart.scale.clone();
+        const end = () => {
+          this.remove(heart);
+        };
+        const data = {
+          position: heart.position,
+          scale: heart.scale,
+          rotation: 0
+        };
+        let lastRotation = 0;
+        new Tween(data)
+          .to(
+            {
+              position: heart.position.clone().add(normal),
+              scale: scale.clone().multiplyScalar(2),
+              rotation: Math.PI * 2
+            },
+            100
+          )
+          .on("update", () => {
+            heart.rotateZ(data.rotation - lastRotation);
+            lastRotation = data.rotation;
+          })
+          .on("complete", end)
+          .on("stop", end)
+          .on("start", () => this.add(heart))
+          .start(time);
+      } else if (action.action === "die") {
+        if (this.processes[action.process].tween)
+          this.processes[action.process].tween.stop();
+        console.log("Die", action.process);
+        this.remove(this.processes[action.process].object);
+        this.processes[action.process] = null;
       } else if (action.action === "write_memory") {
         const process = this.processes[action.process];
         for (let i = 0; i < action.memory.length; i++) {
@@ -239,7 +295,13 @@ export default class Arena extends Scene {
     }
 
     object.rotateZ(Math.PI);
+
     return object;
+    /*const geometry = new BoxGeometry(0.25, 0.25, 0.25);
+    const material = new MeshBasicMaterial({ color });
+    const cube = new Mesh(geometry, material);
+    return cube;
+    return new Object3D();*/
   }
 
   _optimizeProcesses() {

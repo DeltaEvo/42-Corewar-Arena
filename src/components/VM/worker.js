@@ -63,6 +63,19 @@ async function start(url, buffers) {
         offset
       });
     },
+    hook_process_live(process, player) {
+      vm.cycle.push({
+        action: "live",
+        process: (process - vm.processes_offset) / vm.process_size,
+        player
+      });
+    },
+    hook_process_die(process) {
+      vm.cycle.push({
+        action: "die",
+        process: (process - vm.processes_offset) / vm.process_size
+      });
+    },
     hook_process_memory_write(process, offset, size) {
       const buffer = new Uint8Array(size);
       const mem = new Uint8Array(memory.buffer, vm.mem_offset, vm.MEM_SIZE);
@@ -154,6 +167,7 @@ async function start(url, buffers) {
   });
   function loop() {
     if (!david_needs_to_work(vm.pointer, 1)) setTimeout(loop, 1);
+    else self.close();
   }
   loop();
   return { MEM_SIZE };
