@@ -234,7 +234,6 @@ export default class Arena extends Scene {
           heart.children[0].material = new MeshPhongMaterial({
             color: this.processes[action.player - 1].color
           });
-          onLive(action.player - 1);
         }
         const normal = this.memory.placeObject(heart, process.pc);
         const scale = heart.scale.clone();
@@ -264,6 +263,7 @@ export default class Arena extends Scene {
           .on("stop", end)
           .on("start", () => this.add(heart))
           .start(time);
+        onLive(action.player);
       } else if (action.action === "die") {
         if (this.processes[action.process].tween)
           this.processes[action.process].tween.stop();

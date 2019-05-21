@@ -76,13 +76,14 @@ export default {
       width: 100%;
       box-sizing: border-box;
       max-width: 100vh;
-      padding: 7.5%;
+      padding: 10%;
     }
   }
 
   & > .play {
     display: flex;
     align-items: center;
+    width: 4%;
 
     button {
       cursor: pointer;
@@ -111,7 +112,6 @@ export default {
 
   & > .play > .box {
     position: absolute;
-    transform: translateX(-50%)
     width: 7.5%;
   }
 

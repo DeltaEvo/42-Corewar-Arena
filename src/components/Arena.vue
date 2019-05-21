@@ -67,11 +67,16 @@ export default {
       const cyclesToRun = (timestamp - this.last_cycle) / this.cycleMs;
       const currentCycle = this.cycle;
       for (let i = 0; i < Math.floor(cyclesToRun) && this.cycles.length; i++) {
-        this.scene.run(this.cycles.shift(), ++this.cycle, action => {
-          if (action.action == "cycle_to_die")
-            this.$emit("cycleDie", action.value);
-          else console.log("Unhandled", action);
-        });
+        this.scene.run(
+          this.cycles.shift(),
+          ++this.cycle,
+          action => {
+            if (action.action == "cycle_to_die")
+              this.$emit("cycleDie", action.value);
+            else console.log("Unhandled", action);
+          },
+          live => this.$emit("live", live)
+        );
         this.$emit("cycle");
         this.last_cycle += this.cycleMs;
       }
