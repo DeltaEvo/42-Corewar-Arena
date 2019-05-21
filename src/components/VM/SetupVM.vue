@@ -66,12 +66,20 @@ export default {
   height: 100vh;
   overflow: hidden;
 
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+  }
+
   & > .selector {
     width: 70%;
     display: flex;
     justify-content: center;
     align-items: center;
 
+    @media screen and (max-width: 640px) {
+      width: 100%;
+      height: 50%;
+    }
     & > div {
       width: 100%;
       box-sizing: border-box;
@@ -85,6 +93,11 @@ export default {
     align-items: center;
     width: 4%;
 
+    @media screen and (max-width: 640px) {
+      flex-direction: column;
+      width: 100%;
+      height: 3.5vh;
+    }
     button {
       cursor: pointer;
       display: block;
@@ -113,6 +126,10 @@ export default {
   & > .play > .box {
     position: absolute;
     width: 7.5%;
+
+    @media screen and (max-width: 640px) {
+      width: 7vh;
+    }
   }
 
   & > .panel {
@@ -122,6 +139,10 @@ export default {
     box-sizing: border-box;
     color: white;
 
+    @media screen and (max-width: 640px) {
+      width: 100%;
+      height: 50%;
+    }
     .labeled-input {
       display: flex;
       align-items: center;
@@ -129,6 +150,14 @@ export default {
 
       & > * {
         padding: 0 8px;
+      }
+    }
+
+    & > .championships {
+      height: 35%;
+
+      @media screen and (max-width: 640px) {
+        height: 80%;
       }
     }
   }

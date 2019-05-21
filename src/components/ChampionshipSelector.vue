@@ -69,7 +69,6 @@ export default {
 @import "../stylus/theme.styl"
 
 .championships {
-    height: 32.5vh;
     .tabs {
         display: flex;
         flex-direction: row;
@@ -77,6 +76,7 @@ export default {
         justify-content: space-around;
         margin: 0;
         margin-top: 16px;
+        height: 22px;
         padding: 0;
 
         & > li {
@@ -110,7 +110,7 @@ export default {
         }
     }
     .champions {
-        max-height: 100%;
+        max-height: calc(100% - 38px);
         display: flex;
         flex-wrap: wrap;
         justify-content: space-evenly;
