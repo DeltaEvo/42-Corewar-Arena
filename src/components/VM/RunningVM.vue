@@ -56,7 +56,7 @@
         <p>Processes {{ processes }}</p>
         <div class="spacer"></div>
         <my-switch v-model="wireframe" label="Wireframe" />
-        <my-switch v-model="colorMode" label="Memory Content" />
+        <my-switch v-model="colorMode" label="Stealth" />
         <my-switch v-model="doubleCamera" label="Double Camera" />
       </div>
     </section>
