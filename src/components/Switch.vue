@@ -40,7 +40,7 @@ label {
             width: 40px;
             height: 20px;
             border-radius: 1.2em;
-            background: $color.background;
+            background: $color.secondary;
             transition: background-color 200ms;
         }
         &::after {
@@ -57,7 +57,7 @@ label {
     }
     & > input:checked + span {
         &::before {
-            background: $color.secondary;
+            background: $color.active;
         }
 
         &::after {
