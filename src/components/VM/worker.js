@@ -70,7 +70,7 @@ async function start(url, buffers) {
         player
       });
     },
-    hook_process_die(process) {
+    hook_process_die(_vm, process) {
       vm.cycle.push({
         action: "die",
         process: (process - vm.processes_offset) / vm.process_size
@@ -94,16 +94,23 @@ async function start(url, buffers) {
         memory: buffer
       });
     },
-    hook_cycle_to_die(value) {
+    hook_cycle_to_die(_vm, value) {
       vm.cycle.push({
         action: "cycle_to_die",
-        value
+        value: Math.max(0, value) // TODO: fix on vm
       });
     },
     hook_cycle_end() {
       self.postMessage(vm.cycle);
       vm.cycle = [];
       return true;
+    },
+    hook_win(_vm, winner) {
+      vm.cycle.push({
+        action: "win",
+        winner
+      });
+      self.postMessage(vm.cycle);
     }
   };
 
@@ -167,7 +174,9 @@ async function start(url, buffers) {
   });
   function loop() {
     if (!david_needs_to_work(vm.pointer, 1)) setTimeout(loop, 1);
-    else self.close();
+    else {
+      self.close();
+    }
   }
   loop();
   return { MEM_SIZE };

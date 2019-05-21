@@ -7,6 +7,7 @@
       :cycles="vm.cycles"
       :champions="vm.champions"
       :cyclesPerSecond="cyclesPerSecond"
+      :doubleCamera="doubleCamera"
       @cycle="cycle++"
       @live="live"
       @cycleDie="cycleDie"
@@ -55,6 +56,7 @@
         <p>Processes {{ processes }}</p>
         <button @click="wireframe = !wireframe">Wireframe</button>
         <button @click="colorMode = !colorMode">Color Mode</button>
+        <button @click="doubleCamera = !doubleCamera">Double Camera</button>
       </div>
     </section>
   </div>
@@ -71,6 +73,7 @@ export default {
     return {
       wireframe: false,
       colorMode: false,
+      doubleCamera: true,
       cycle: 0,
       lastCycleDie: 0,
       cycleToDie: 1,
