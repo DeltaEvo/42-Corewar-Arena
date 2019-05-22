@@ -63,7 +63,7 @@ async function start(url, buffers) {
         offset
       });
     },
-    hook_process_live(process, player) {
+    hook_process_live(_vm, process, player) {
       vm.cycle.push({
         action: "live",
         process: (process - vm.processes_offset) / vm.process_size,
