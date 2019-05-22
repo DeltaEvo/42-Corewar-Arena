@@ -75,7 +75,7 @@ export default {
     return {
       wireframe: false,
       colorMode: false,
-      doubleCamera: true,
+      doubleCamera: false,
       cycle: 0,
       lastCycleDie: 0,
       cycleToDie: 1,
