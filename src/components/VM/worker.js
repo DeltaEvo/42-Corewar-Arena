@@ -114,13 +114,9 @@ async function start(url, buffers) {
     }
   };
 
-  // Bintray dont set mime type so we can't use instantiateStreaming
-  const { instance } = await WebAssembly.instantiate(
-    await (await fetch(url)).arrayBuffer(),
-    {
-      env
-    }
-  );
+  const { instance } = await WebAssembly.instantiateStreaming(fetch(url), {
+    env
+  });
 
   const {
     get_vm_mem_size,
