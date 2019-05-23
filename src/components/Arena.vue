@@ -22,7 +22,8 @@ export default {
     "cycles",
     "cyclesPerSecond",
     "champions",
-    "doubleCamera"
+    "doubleCamera",
+    "progressDie"
   ],
   async mounted() {
     const { clientWidth: width, clientHeight: height } = this.$el;
@@ -94,6 +95,16 @@ export default {
       this.$emit("processes", this.scene.processes.filter(e => e).length);
       tweenUpdate(currentCycle + cyclesToRun);
       this.scene.updateTime(cyclesToRun);
+      const theta = Math.PI * -0.5;
+      //const theta = 0;
+      const phi = 2 * Math.PI * (0.5 + this.progressDie * 0.5);
+      this.scene.sky.material.uniforms.sunPosition.value.set(
+        100 * Math.cos(phi),
+        100 * Math.sin(phi) * Math.sin(theta),
+        100 * Math.sin(phi) * Math.cos(theta)
+      );
+
+      this.scene.sky.material.elementsNeedsUpdate = true;
       if (this.doubleCamera) this.renderDoubleCamera();
       else this.renderCamera();
     },

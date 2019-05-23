@@ -8,6 +8,7 @@
       :champions="vm.champions"
       :cyclesPerSecond="cyclesPerSecond"
       :doubleCamera="doubleCamera"
+      :progressDie="progressDie"
       @cycle="cycle++"
       @live="live"
       @cycleDie="cycleDie"
@@ -38,10 +39,7 @@
         </div>
       </div>
       <div class="bar">
-        <circle-progress
-          class="cycles"
-          :value="(((cycle - lastCycleDie) % cycleToDie) / cycleToDie) * 100"
-        >
+        <circle-progress class="cycles" :value="progressDie * 100">
           Cycle {{ cycle }}
         </circle-progress>
         <p>Speed {{ currentCyclesPerSecond }} cycles/s</p>
@@ -109,6 +107,13 @@ export default {
         this.lives[player - 1]++;
         this.lastLive = player - 1;
       } else this.invalidLives++;
+    }
+  },
+  computed: {
+    progressDie() {
+      return (
+        ((this.cycle - this.lastCycleDie) % this.cycleToDie) / this.cycleToDie
+      );
     }
   },
   components: {

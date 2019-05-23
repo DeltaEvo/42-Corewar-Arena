@@ -127,7 +127,7 @@ export default class Arena extends Scene {
       Object.assign(light.position, position);
       this.add(light);
     }
-    this.add(new Background());
+    this.add((this.sky = new Background()));
     this.processes = [];
     this.mixers = [];
 
