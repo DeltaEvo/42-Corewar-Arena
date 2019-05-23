@@ -140,7 +140,6 @@ export default class Arena extends Scene {
   }
 
   run(cycle, time, onUnhandled = () => {}, onLive = () => {}) {
-    //console.log(cycle.length)
     for (const action of cycle) {
       if (action.action === "spawn") {
         const color =
@@ -267,9 +266,9 @@ export default class Arena extends Scene {
       } else if (action.action === "die") {
         if (this.processes[action.process].tween)
           this.processes[action.process].tween.stop();
-        console.log("Die", action.process);
-        this.remove(this.processes[action.process].object);
-        this.processes[action.process] = null;
+        const { color, object } = this.processes[action.process];
+        this.remove(object);
+        this.processes[action.process] = { color };
       } else if (action.action === "write_memory") {
         const process = this.processes[action.process];
         for (let i = 0; i < action.memory.length; i++) {
