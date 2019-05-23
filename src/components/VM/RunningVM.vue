@@ -25,6 +25,7 @@
             ] + 1};`
           "
         >
+          <icon v-show="lastLive == i" icon="crown" />
           <span class="name">{{ player.name }}</span>
           <img :src="`https://robohash.org/${player.name}.png`" />
           <span class="score">{{ lives[i] }}</span>
@@ -83,6 +84,7 @@ export default {
       cyclesPerSecond: 50,
       processes: 0,
       lives: [],
+      lastLive: -1,
       invalidLives: 0,
       colors: COLORS
     };
@@ -103,8 +105,10 @@ export default {
       this.invalidLives = 0;
     },
     live(player) {
-      if (player >= 1 && player <= this.lives.length) this.lives[player]++;
-      else this.invalidLives++;
+      if (player >= 1 && player <= this.lives.length) {
+        this.lives[player - 1]++;
+        this.lastLive = player - 1;
+      } else this.invalidLives++;
     }
   },
   components: {
@@ -173,7 +177,6 @@ export default {
           font-weight: bold;
           font-size: 12px;
         }
-
 
         & > img {
           width: 60px;
