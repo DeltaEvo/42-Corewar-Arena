@@ -34,8 +34,7 @@ export default {
     });
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
-    this.renderer.setSize(width, height);
-    this.$el.style = "";
+    this.renderer.setSize(width, height, false);
 
     this.camera = new PerspectiveCamera(FOV, width / height, NEAR, FAR);
     this.camera.position.z = 20;
@@ -45,8 +44,7 @@ export default {
     this.observer = new ResizeObserver(() => {
       const { clientWidth: width, clientHeight: height } = this.$el;
 
-      this.renderer.setSize(width, height);
-      this.$el.style = "";
+      this.renderer.setSize(width, height, false);
       this.camera.aspect = width / height;
       this.camera.updateProjectionMatrix();
     });
