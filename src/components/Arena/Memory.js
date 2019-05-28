@@ -8,7 +8,8 @@ import {
   LineBasicMaterial,
   LineSegments,
   CanvasTexture,
-  Vector3
+  Vector3,
+  DoubleSide
 } from "three";
 import { WireframeGeometry } from "./WireframeGeometry";
 
@@ -97,7 +98,12 @@ export default class Memory extends Object3D {
         canvas.width / 2,
         canvas.height / 2 + canvas.height / 6
       );
-      materials.push(new MeshBasicMaterial({ map: new CanvasTexture(canvas) }));
+      materials.push(
+        new MeshBasicMaterial({
+          map: new CanvasTexture(canvas),
+          side: DoubleSide
+        })
+      );
     }
     return materials;
   }

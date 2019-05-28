@@ -11,7 +11,7 @@ const decoder = new TextDecoder();
 
 async function start(url, buffers) {
   const memory = new WebAssembly.Memory({
-    initial: 44 // TODO: reset to 2
+    initial: 2
   });
 
   const vm = {
@@ -169,7 +169,7 @@ async function start(url, buffers) {
     value: get_cycle_to_die()
   });
   function loop() {
-    if (!david_needs_to_work(vm.pointer, 1)) setTimeout(loop, 1);
+    if (!david_needs_to_work(vm.pointer, 1)) setTimeout(loop, 0);
     else {
       self.close();
     }

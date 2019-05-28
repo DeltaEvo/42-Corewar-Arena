@@ -55,7 +55,6 @@ export default {
     this.controls.enablePan = false;
     this.controls.autoRotate = true;
     this.controls.autoRotateSpeed = 1;
-    console.log(this.controls);
 
     this.scene = window.scene = new Arena(await loadModels(), this.champions);
     this.scene.memory.wireframe = this.wireframe;
