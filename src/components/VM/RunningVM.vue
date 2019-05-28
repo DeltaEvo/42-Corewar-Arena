@@ -1,6 +1,7 @@
 <template>
   <div class="running-vm">
     <arena
+      v-if="false"
       :wireframe="wireframe"
       :colorMode="colorMode"
       class="arena"
@@ -14,6 +15,16 @@
       @cycleDie="cycleDie"
       @processes="value => (processes = value)"
     ></arena>
+    <arena-2D
+      v-else
+      class="arena"
+      :cycles="vm.cycles"
+      :colorMode="colorMode"
+      @cycle="cycle++"
+      @live="live"
+      @cycleDie="cycleDie"
+      @processes="value => (processes = value)"
+    ></arena-2D>
     <section class="infos">
       <div class="scores">
         <div
@@ -54,9 +65,9 @@
         </div>
         <p>Processes {{ processes }}</p>
         <div class="spacer"></div>
-        <my-switch v-model="wireframe" label="Wireframe" />
+        <!--my-switch v-model="wireframe" label="Wireframe" /-->
         <my-switch v-model="colorMode" label="Stealth" />
-        <my-switch v-model="doubleCamera" label="Double Camera" />
+        <!--my-switch v-model="doubleCamera" label="Double Camera" /-->
       </div>
     </section>
   </div>
@@ -64,6 +75,7 @@
 
 <script>
 import Arena from "../Arena.vue";
+import Arena2D from "../Arena2D.vue";
 import CircleProgress from "../CircleProgress";
 import { COLORS } from "../Arena/Memory";
 import Switch from "../Switch";
@@ -118,6 +130,7 @@ export default {
   },
   components: {
     Arena,
+    Arena2D,
     CircleProgress,
     MySwitch: Switch
   }
@@ -140,6 +153,7 @@ export default {
 
   & > .arena {
     width: calc(100% - 260px);
+    max-width: 100vh;
 
     @media screen and (max-width: 640px) {
       width: 100%;

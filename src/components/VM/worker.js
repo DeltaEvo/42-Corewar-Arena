@@ -149,7 +149,7 @@ async function start(url, buffers) {
   for (const [i, abuffer] of buffers.entries()) {
     const buffer = new Uint8Array(abuffer);
     const process = add_process(vec);
-    const offset = (MEM_SIZE / buffers.length) * i;
+    const offset = Math.floor(MEM_SIZE / buffers.length) * i;
     init_process(process, offset, i);
     vm.cycle.push({
       action: "spawn",

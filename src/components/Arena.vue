@@ -89,7 +89,10 @@ export default {
         this.last_cycle += this.cycleMs;
       }
       this.controls.update();
-      this.$emit("processes", this.scene.processes.filter(e => e).length);
+      this.$emit(
+        "processes",
+        this.scene.processes.filter(e => e.object).length
+      );
       tweenUpdate(currentCycle + cyclesToRun);
       this.scene.updateTime(cyclesToRun);
       const theta = Math.PI * -0.5;
