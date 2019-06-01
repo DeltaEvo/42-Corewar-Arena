@@ -1,7 +1,7 @@
 <template>
   <div class="running-vm">
     <arena
-      v-if="false"
+      v-if="arena3d"
       :wireframe="wireframe"
       :colorMode="colorMode"
       class="arena"
@@ -17,7 +17,7 @@
     ></arena>
     <arena-2D
       v-else
-      class="arena"
+      class="arena arena2d"
       :cycles="vm.cycles"
       :colorMode="colorMode"
       @cycle="cycle++"
@@ -65,9 +65,13 @@
         </div>
         <p>Processes {{ processes }}</p>
         <div class="spacer"></div>
-        <!--my-switch v-model="wireframe" label="Wireframe" /-->
+        <my-switch v-if="arena3d" v-model="wireframe" label="Wireframe" />
         <my-switch v-model="colorMode" label="Stealth" />
-        <!--my-switch v-model="doubleCamera" label="Double Camera" /-->
+        <my-switch
+          v-if="arena3d"
+          v-model="doubleCamera"
+          label="Double Camera"
+        />
       </div>
     </section>
   </div>
@@ -81,7 +85,7 @@ import { COLORS } from "../Arena/Memory";
 import Switch from "../Switch";
 
 export default {
-  props: ["vm"],
+  props: ["vm", "arena3d"],
   data() {
     return {
       wireframe: false,
@@ -141,6 +145,7 @@ export default {
 @import "../../stylus/theme.styl"
 
 .running-vm {
+	background: $color.primary;
 	height: 100vh;
 	overflow: hidden;
 	display: flex;
@@ -153,11 +158,18 @@ export default {
 
   & > .arena {
     width: calc(100% - 260px);
-    max-width: 100vh;
+
+    &.arena2d {
+      max-width: 100vh;
+      margin: auto;
+    }
 
     @media screen and (max-width: 640px) {
       width: 100%;
       height: calc(100vh - 80px);
+      &.arena2d {
+        max-height: 100vw;
+      }
     }
   }
 

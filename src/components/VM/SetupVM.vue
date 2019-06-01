@@ -20,6 +20,11 @@
         </div>
       </div>
       <championship-selector @load="load" />
+      <RTXSwitch
+        class="rtx"
+        :value="arena3d"
+        @input="val => $emit('arena3d', val)"
+      />
     </section>
   </div>
 </template>
@@ -29,9 +34,10 @@ import ChampionSelector from "../ChampionSelector.vue";
 import ChampionshipSelector from "../ChampionshipSelector.vue";
 import Ratio from "../Ratio.vue";
 import Versions from "../Versions.vue";
+import RTXSwitch from "../RTXSwitch.vue";
 
 export default {
-  props: ["vm"],
+  props: ["vm", "arena3d"],
   data() {
     return {
       version: null
@@ -54,7 +60,8 @@ export default {
     ChampionSelector,
     ChampionshipSelector,
     Ratio,
-    Versions
+    Versions,
+    RTXSwitch
   }
 };
 </script>
@@ -135,15 +142,18 @@ export default {
   & > .panel {
     width: 30%;
     background: $color.primary;
-    padding: 32px;
     box-sizing: border-box;
     color: white;
+    display: flex;
+    flex-direction: column;
 
     @media screen and (max-width: 640px) {
       width: 100%;
       height: 50%;
     }
     .labeled-input {
+      margin: 32px;
+      margin-bottom: 0;
       display: flex;
       align-items: center;
       white-space: nowrap;
@@ -154,11 +164,16 @@ export default {
     }
 
     & > .championships {
+      margin: 0 32px;
       height: 35%;
 
       @media screen and (max-width: 640px) {
-        height: 80%;
+        height: calc(80% - 80px);
       }
+    }
+
+    & > .rtx {
+      margin: auto 0 15px auto;
     }
   }
 }
