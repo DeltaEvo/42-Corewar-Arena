@@ -81,6 +81,7 @@ export default {
           action => {
             if (action.action == "cycle_to_die")
               this.$emit("cycleDie", action.value);
+            else if (action.action == "win") this.$emit("end");
             else console.log("Unhandled", action);
           },
           live => this.$emit("live", live)

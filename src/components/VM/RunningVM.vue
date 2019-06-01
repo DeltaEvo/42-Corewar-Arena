@@ -14,6 +14,7 @@
       @live="live"
       @cycleDie="cycleDie"
       @processes="value => (processes = value)"
+      @end="ended = true"
     ></arena>
     <arena-2D
       v-else
@@ -24,6 +25,7 @@
       @live="live"
       @cycleDie="cycleDie"
       @processes="value => (processes = value)"
+      @end="ended = true"
     ></arena-2D>
     <section class="infos">
       <div class="scores">
@@ -37,7 +39,7 @@
             ] + 1};`
           "
         >
-          <icon v-show="lastLive == i" icon="crown" />
+          <icon v-show="lastLives[0].name === player.name" icon="crown" />
           <span class="name">{{ player.name }}</span>
           <img :src="`https://robohash.org/${player.name}.png`" />
           <span class="score">{{ lives[i] }}</span>
@@ -74,6 +76,7 @@
         />
       </div>
     </section>
+    <win-overlay v-if="ended" :players="lastLives" />
   </div>
 </template>
 
@@ -83,6 +86,7 @@ import Arena2D from "../Arena2D.vue";
 import CircleProgress from "../CircleProgress";
 import { COLORS } from "../Arena/Memory";
 import Switch from "../Switch";
+import WinOverlay from "../WinOverlay";
 
 export default {
   props: ["vm", "arena3d"],
@@ -91,6 +95,7 @@ export default {
       wireframe: false,
       colorMode: false,
       doubleCamera: false,
+      ended: false,
       cycle: 0,
       lastCycleDie: 0,
       cycleToDie: 1,
@@ -98,7 +103,10 @@ export default {
       cyclesPerSecond: 50,
       processes: 0,
       lives: [],
-      lastLive: -1,
+      lastLives: this.vm.champions.map(({ name }, i) => ({
+        name,
+        color: `#${COLORS[i].toString(16)}`
+      })),
       invalidLives: 0,
       colors: COLORS
     };
@@ -121,7 +129,12 @@ export default {
     live(player) {
       if (player >= 1 && player <= this.lives.length) {
         this.lives[player - 1]++;
-        this.lastLive = player - 1;
+        const currentIdx = this.lastLives.findIndex(
+          ({ name }) => name === this.vm.champions[player - 1].name
+        );
+        const [toMove] = this.lastLives.splice(currentIdx, 1);
+        console.log(this.lastLives, toMove);
+        this.lastLives.unshift(toMove);
       } else this.invalidLives++;
     }
   },
@@ -136,6 +149,7 @@ export default {
     Arena,
     Arena2D,
     CircleProgress,
+    WinOverlay,
     MySwitch: Switch
   }
 };
