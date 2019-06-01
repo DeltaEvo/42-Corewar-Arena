@@ -79,7 +79,26 @@ function createHeart() {
 }
 
 export async function loadModels() {
-  const [ring_yellow, process] = await Promise.all([
+  const [
+    ring_blue,
+    ring_green,
+    ring_red,
+    ring_white,
+    ring_yellow,
+    process
+  ] = await Promise.all([
+    load(gltf, "/models/ring_blue/scene.gltf", "/models/ring_blue/").then(
+      transformGltf(0.125)
+    ),
+    load(gltf, "/models/ring_green/scene.gltf", "/models/ring_green/").then(
+      transformGltf(0.125)
+    ),
+    load(gltf, "/models/ring_red/scene.gltf", "/models/ring_red/").then(
+      transformGltf(0.125)
+    ),
+    load(gltf, "/models/ring_white/scene.gltf", "/models/ring_white/").then(
+      transformGltf(0.125)
+    ),
     load(gltf, "/models/ring_yellow/scene.gltf", "/models/ring_yellow/").then(
       transformGltf(0.125)
     ),
@@ -89,6 +108,10 @@ export async function loadModels() {
   ]);
 
   return {
+    ring_blue,
+    ring_green,
+    ring_red,
+    ring_white,
     ring_yellow,
     process,
     heart: createHeart()

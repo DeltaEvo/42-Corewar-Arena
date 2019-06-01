@@ -9,110 +9,7 @@ import Background from "./Background";
 import Memory, { COLORS } from "./Memory";
 import { Tween } from "es6-tween";
 
-const INSTRUCTIONS = new Map([
-  [
-    0x01,
-    {
-      name: "live"
-    }
-  ],
-  [
-    0x02,
-    {
-      name: "ld"
-    }
-  ],
-  [
-    0x03,
-    {
-      name: "st"
-    }
-  ],
-  [
-    0x04,
-    {
-      name: "add"
-    }
-  ],
-  [
-    0x05,
-    {
-      name: "sub"
-    }
-  ],
-  [
-    0x06,
-    {
-      name: "and"
-    }
-  ],
-  [
-    0x07,
-    {
-      name: "or"
-    }
-  ],
-  [
-    0x08,
-    {
-      name: "xor"
-    }
-  ],
-  [
-    0x09,
-    {
-      name: "xjmp"
-    }
-  ],
-  [
-    0x09,
-    {
-      name: "zjmp"
-    }
-  ],
-  [
-    0x0a,
-    {
-      name: "ldi"
-    }
-  ],
-  [
-    0x0b,
-    {
-      name: "sti"
-    }
-  ],
-  [
-    0x0c,
-    {
-      name: "fork"
-    }
-  ],
-  [
-    0x0d,
-    {
-      name: "lld"
-    }
-  ],
-  [
-    0x0e,
-    {
-      name: "lldi"
-    }
-  ],
-  [
-    0x0f,
-    {
-      name: "lfork"
-    }
-  ],
-  [
-    0x10,
-    {
-      name: "aff"
-    }
-  ]
-]);
+import INSTRUCTIONS from "./instructions";
 
 const LIGHTS = [{ x: 0, y: 0, z: 100 }, { x: 0, y: 0, z: -100 }];
 
@@ -176,20 +73,19 @@ export default class Arena extends Scene {
       } else if (action.action === "read_opcode") {
         const process = this.processes[action.process];
         if (INSTRUCTIONS.has(action.opcode)) {
-          const { name } = INSTRUCTIONS.get(action.opcode);
+          const { name, cycles, animation } = INSTRUCTIONS.get(action.opcode);
 
-          //console.log("Run", name);
-          if (name === "st") {
-            const ring = this.models.ring_yellow.object.clone();
+          if (animation) {
+            const ring = this.models[animation].object.clone();
             const normal = this.memory.placeObject(ring, process.pc);
             ring.position.add(normal.multiplyScalar(0.05));
             const mixer = new AnimationMixer(ring);
 
-            mixer.clipAction(this.models.ring_yellow.animations[0]).play();
+            mixer.clipAction(this.models[animation].animations[0]).play();
             this.mixers.push(mixer);
             if (process.tween) process.tween.stop();
             process.tween = new Tween({ x: 0 })
-              .to({ x: 1 }, 5)
+              .to({ x: 1 }, cycles)
               .on("start", () => {
                 this.add(ring);
               })
@@ -205,7 +101,7 @@ export default class Arena extends Scene {
               })
               .start(time);
           }
-          if (name === "fork") {
+          if (name === "fork" || name === "lfork") {
             const normal = this.memory.placeObject(null, process.pc);
             if (process.tween) process.tween.stop();
             const scale = process.object.scale.clone();
@@ -218,13 +114,13 @@ export default class Arena extends Scene {
                   position: process.object.position.clone().add(normal),
                   scale: scale.clone().multiplyScalar(1.5)
                 },
-                800
+                cycles
               )
               .on("complete", end)
               .on("stop", end)
               .start(time);
           }
-        } //else console.log("Unknown instruction", action.opcode);
+        }
       } else if (action.action === "live") {
         const process = this.processes[action.process];
 
