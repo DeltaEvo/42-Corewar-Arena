@@ -2,7 +2,12 @@
   <div class="vm-setup">
     <section class="selector">
       <div>
-        <champion-selector :max="4" :champions="vm.champions" @load="load" />
+        <champion-selector
+          :max="4"
+          :champions="vm.champions"
+          @load="load"
+          @delete="item => vm.champions.splice(vm.champions.indexOf(item), 1)"
+        />
       </div>
     </section>
     <div class="play">
@@ -49,10 +54,12 @@ export default {
       else alert("No version selected");
     },
     load(buffer) {
-      try {
-        this.vm.loadChampion(buffer);
-      } catch (e) {
-        alert(e);
+      if (this.vm.champions.length < 4) {
+        try {
+          this.vm.loadChampion(buffer);
+        } catch (e) {
+          alert(e);
+        }
       }
     }
   },

@@ -39,7 +39,7 @@
             ] + 1};`
           "
         >
-          <icon v-show="lastLives[0].name === player.name" icon="crown" />
+          <icon v-show="lastLives[0].i === i" icon="crown" />
           <span class="name">{{ player.name }}</span>
           <img :src="`https://robohash.org/${player.name}.png`" />
           <span class="score">{{ lives[i] }}</span>
@@ -55,7 +55,8 @@
         <circle-progress class="cycles" :value="progressDie * 100">
           Cycle {{ cycle }}
         </circle-progress>
-        <p>Speed {{ currentCyclesPerSecond }} cycles/s</p>
+        <p>Cycles to die: {{ cycleToDie }}</p>
+        <p>Speed: {{ currentCyclesPerSecond }} cycles/s</p>
         <div class="cycles-per-second">
           <button v-show="cyclesPerSecond > 0" @click="cyclesPerSecond -= 10">
             -
@@ -98,18 +99,27 @@ export default {
       ended: false,
       cycle: 0,
       lastCycleDie: 0,
-      cycleToDie: 1,
+      cycleToDie: 0,
       currentCyclesPerSecond: 0,
       cyclesPerSecond: 50,
       processes: 0,
       lives: [],
       lastLives: this.vm.champions.map(({ name }, i) => ({
         name,
+        i,
         color: `#${COLORS[i].toString(16)}`
       })),
       invalidLives: 0,
       colors: COLORS
     };
+  },
+  watch: {
+    cycle(val) {
+      if ((val - this.lastCycleDie) % this.cycleToDie === 0) {
+        this.lives = this.vm.champions.map(() => 0);
+        this.invalidLives = 0;
+      }
+    }
   },
   mounted() {
     let last = this.cycle;
@@ -120,7 +130,6 @@ export default {
   },
   methods: {
     cycleDie(value) {
-      console.log("CycleDie", value);
       this.lastCycleDie = this.cycle;
       this.cycleToDie = value;
       this.lives = this.vm.champions.map(() => 0);
@@ -133,16 +142,17 @@ export default {
           ({ name }) => name === this.vm.champions[player - 1].name
         );
         const [toMove] = this.lastLives.splice(currentIdx, 1);
-        console.log(this.lastLives, toMove);
         this.lastLives.unshift(toMove);
       } else this.invalidLives++;
     }
   },
   computed: {
     progressDie() {
-      return (
-        ((this.cycle - this.lastCycleDie) % this.cycleToDie) / this.cycleToDie
-      );
+      if (this.cycleToDie === 0) return 1;
+      else
+        return (
+          ((this.cycle - this.lastCycleDie) % this.cycleToDie) / this.cycleToDie
+        );
     }
   },
   components: {
@@ -274,17 +284,21 @@ export default {
         width: inherit;
       }
 
-      & > .cycles {
+      > p {
+        margin: 4px;
+      }
+
+      > .cycles {
         margin: 15%;
       }
 
-      & > .cycles-per-second {
+      > .cycles-per-second {
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
-      & > .spacer {
+      > .spacer {
         margin-top: auto;
       }
     }

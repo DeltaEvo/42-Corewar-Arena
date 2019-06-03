@@ -67,6 +67,11 @@ export default {
       this.render(null);
     }
   },
+  computed: {
+    cycleMs() {
+      return 1000 / this.cyclesPerSecond;
+    }
+  },
   methods: {
     render(actions) {
       if (actions)

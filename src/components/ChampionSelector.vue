@@ -1,6 +1,11 @@
 <template>
   <circle-layout :items="champions" class="circle">
-    <champion slot="item" slot-scope="{ item }" :value="item"></champion>
+    <champion
+      slot="item"
+      slot-scope="{ item }"
+      :value="item"
+      @click.native="() => $emit('delete', item)"
+    ></champion>
     <ratio class="add" v-if="champions.length < max">
       <upload accept=".cor,.cro" @input="add">
         <icon class="icon" icon="upload" />
@@ -41,7 +46,7 @@ export default {
   border-color: $color.primary;
 
 	.add {
-		width: 25%;
+		width: 100%;
 		border-radius: 50%;
 		border: 2px solid $color.primary;
 

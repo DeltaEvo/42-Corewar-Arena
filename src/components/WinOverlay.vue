@@ -1,9 +1,13 @@
 <template>
   <div class="win-overlay">
+    <img
+      class="winnerPhoto"
+      :src="`https://robohash.org/${players[0].name}.png`"
+    />
     <div class="winner">
       <div class="container">
         <div
-          class="petitTriangle"
+          class="triangle"
           :style="
             `border-color: transparent transparent transparent ${
               players[0].color
@@ -17,14 +21,9 @@
       </div>
       <span class="winnerName">{{ players[0].name }}</span>
     </div>
-    <img class="winnerPhoto" src="" alt="" />
     <div class="triangle"></div>
     <div class="podium">
-      <div
-        v-for="(player, i) in players.slice(1)"
-        :key="player.name"
-        class="first"
-      >
+      <div v-for="(player, i) in players.slice(1)" :key="i" class="first">
         <div class="second" :style="`background: ${player.color}`">
           <img :src="`https://robohash.org/${player.name}.png`" />
           <div class="corner">
@@ -53,6 +52,7 @@ export default {
   perspective: 250px;
   perspective-origin: bottom right;
   overflow: hidden;
+  pointer-events: none;
 
   @keyframes slideTop {
     from {
@@ -151,12 +151,11 @@ export default {
       }
       .num {
         position: absolute;
-        top: 0;
-        text-shadow: 6px 0 0 black, -6px 0 0 black, 0 6px 0 black, 0 -6px 0 black, 4px 4px black, -4px -4px 0 black, 4px -4px 0 black, -4px 4px 0 black;
-        font: small-caps bold 24px/1 sans-serif;
-        left: 33px;
+        top: -2px;
+        font: small-caps bold 120px/1 sans-serif;
+        left: 20px;
         color: white;
-        font-size: 6rem;
+        -webkit-text-stroke: 6px black;
       }
     }
   }
@@ -203,11 +202,10 @@ export default {
           background: linear-gradient(to right, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          -webkit-text-stroke-color: black;
-          -webkit-text-stroke-width: 5px;
+          -webkit-text-stroke: 5px black;
         }
       }
-      > .petitTriangle {
+      > .triangle {
           width: 0;
           height: 0;
           border-style: solid;
@@ -221,6 +219,14 @@ export default {
         font: small-caps bold 160px/1 sans-serif;
         text-shadow: -10px 10px white;
     }
+  }
+  > .winnerPhoto {
+    position: absolute;
+    right: 0;
+    bottom: 40px;
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
   }
 }
 </style>

@@ -71,7 +71,7 @@ export default {
 
 .circle-progress {
     position: relative;
-    & > .inner {
+    > .inner {
         position: absolute;
         width: 100%;
         height: 100%;
@@ -81,11 +81,11 @@ export default {
         align-items: center;
         justify-content: center;
     }
-    & > svg {
-        & > .back {
+    > svg {
+        > .back {
             stroke: $color.secondary;
         }
-        & > .front {
+        > .front {
             stroke: #EF5350;
         }
     }

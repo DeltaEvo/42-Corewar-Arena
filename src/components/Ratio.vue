@@ -18,6 +18,7 @@ export default {};
   display: block;
   content: "";
   padding-top: 100%;
+  pointer-events: none;
 }
 
 .content {

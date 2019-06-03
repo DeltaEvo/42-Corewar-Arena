@@ -12,7 +12,7 @@
     >
       <slot name="item" :item="item"></slot>
     </div>
-    <div style="transform: translate(-50%, -50%)">
+    <div style="transform: translate(-50%, -50%); width: 25%">
       <slot></slot>
     </div>
   </div>
@@ -45,6 +45,7 @@ export default {
 		content: "";
 		display: block;
 		padding-top: 100%;
+		pointer-events: none;
 	}
 }
 </style>

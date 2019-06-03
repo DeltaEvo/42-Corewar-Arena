@@ -38,6 +38,7 @@ export default {
 	border: 2px solid $color.primary;
 	overflow: hidden;
 	background: white;
+	cursor: pointer;
 
 	.name {
 		padding: 5px;
