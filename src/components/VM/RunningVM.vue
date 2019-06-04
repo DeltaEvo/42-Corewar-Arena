@@ -56,18 +56,18 @@
         <circle-progress class="cycles" :value="progressDie * 100">
           Cycle {{ cycle }}
         </circle-progress>
-        <p>Cycles to die: {{ cycleToDie }}</p>
-        <p>Speed: {{ currentCyclesPerSecond }} cycles/s</p>
         <div class="cycles-per-second">
           <button v-show="cyclesPerSecond > 0" @click="cyclesPerSecond -= 10">
-            -
+            <icon icon="minus" />
           </button>
           <span>{{ cyclesPerSecond }} cycles/s</span>
           <button @click="cyclesPerSecond += 10">
-            +
+            <icon icon="plus" />
           </button>
         </div>
-        <p>Processes {{ processes }}</p>
+        <p>Speed: {{ currentCyclesPerSecond }} cycles/s</p>
+        <p>Cycles to die: {{ cycleToDie }}</p>
+        <p>Processes: {{ processes }}</p>
         <div class="spacer"></div>
         <my-switch v-if="arena3d" v-model="wireframe" label="Wireframe" />
         <my-switch v-model="colorMode" label="Stealth" />
@@ -297,6 +297,18 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
+
+        > button {
+          border: none;
+          background: none;
+          color: $color.secondary;
+          cursor: pointer;
+          outline: none;
+          &:hover {
+            color: $color.active;
+          }
+        }
+        margin-bottom: 15px;
       }
 
       > .spacer {

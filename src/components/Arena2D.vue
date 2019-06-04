@@ -74,22 +74,24 @@ export default {
     tick(timestamp) {
       this.raf = requestAnimationFrame(this.tick);
       if (!this.last_cycle) this.last_cycle = timestamp;
-      const cyclesToRun = Math.floor(
-        (timestamp - this.last_cycle) / this.cycleMs
-      );
-      for (
-        let i = 0;
-        i < cyclesToRun &&
-        this.cycles.length &&
-        performance.now() - timestamp < 16;
-        i++
-      ) {
-        this.run(this.cycles.shift());
-        this.$emit("cycle");
-        this.$emit("processes", this.processes.filter(e => e.live).length);
-        this.last_cycle += this.cycleMs;
-      }
-      if (cyclesToRun) this.render();
+      if (this.cyclesPerSecond) {
+        const cyclesToRun = Math.floor(
+          (timestamp - this.last_cycle) / this.cycleMs
+        );
+        for (
+          let i = 0;
+          i < cyclesToRun &&
+          this.cycles.length &&
+          performance.now() - timestamp < 16;
+          i++
+        ) {
+          this.run(this.cycles.shift());
+          this.$emit("cycle");
+          this.$emit("processes", this.processes.filter(e => e.live).length);
+          this.last_cycle += this.cycleMs;
+        }
+        if (cyclesToRun) this.render();
+      } else this.last_cycle = timestamp;
     },
     run(cycle) {
       for (const action of cycle) {

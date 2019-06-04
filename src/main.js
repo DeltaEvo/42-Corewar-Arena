@@ -2,12 +2,18 @@ import Vue from "vue";
 import App from "./App.vue";
 import "./components/VM";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faUpload, faPlay, faCrown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUpload,
+  faPlay,
+  faCrown,
+  faPlus,
+  faMinus
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-library.add(faUpload, faPlay, faCrown);
+library.add(faUpload, faPlay, faCrown, faPlus, faMinus);
 
 Vue.component("icon", FontAwesomeIcon);
 

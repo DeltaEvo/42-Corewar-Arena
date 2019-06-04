@@ -72,30 +72,36 @@ export default {
     render(timestamp) {
       this.raf = requestAnimationFrame(this.render);
       if (!this.last_cycle) this.last_cycle = timestamp;
-      const cyclesToRun = (timestamp - this.last_cycle) / this.cycleMs;
-      const currentCycle = this.cycle;
-      for (let i = 0; i < Math.floor(cyclesToRun) && this.cycles.length; i++) {
-        this.scene.run(
-          this.cycles.shift(),
-          ++this.cycle,
-          action => {
-            if (action.action == "cycle_to_die")
-              this.$emit("cycleDie", action.value);
-            else if (action.action == "win") this.$emit("end");
-            else console.log("Unhandled", action);
-          },
-          live => this.$emit("live", live)
+      if (this.cyclesPerSecond) {
+        const cyclesToRun = (timestamp - this.last_cycle) / this.cycleMs;
+        const currentCycle = this.cycle;
+        for (
+          let i = 0;
+          i < Math.floor(cyclesToRun) && this.cycles.length;
+          i++
+        ) {
+          this.scene.run(
+            this.cycles.shift(),
+            ++this.cycle,
+            action => {
+              if (action.action == "cycle_to_die")
+                this.$emit("cycleDie", action.value);
+              else if (action.action == "win") this.$emit("end");
+              else console.log("Unhandled", action);
+            },
+            live => this.$emit("live", live)
+          );
+          this.$emit("cycle");
+          this.last_cycle += this.cycleMs;
+        }
+        this.$emit(
+          "processes",
+          this.scene.processes.filter(e => e.object).length
         );
-        this.$emit("cycle");
-        this.last_cycle += this.cycleMs;
-      }
+        tweenUpdate(currentCycle + cyclesToRun);
+        this.scene.updateTime(cyclesToRun);
+      } else this.last_cycle = timestamp;
       this.controls.update();
-      this.$emit(
-        "processes",
-        this.scene.processes.filter(e => e.object).length
-      );
-      tweenUpdate(currentCycle + cyclesToRun);
-      this.scene.updateTime(cyclesToRun);
       const theta = Math.PI * -0.5;
       //const theta = 0;
       const phi = 2 * Math.PI * (0.5 + this.progressDie * 0.5);
