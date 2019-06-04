@@ -21,6 +21,7 @@
       class="arena arena2d"
       :cycles="vm.cycles"
       :colorMode="colorMode"
+      :cyclesPerSecond="cyclesPerSecond"
       @cycle="cycle++"
       @live="live"
       @cycleDie="cycleDie"

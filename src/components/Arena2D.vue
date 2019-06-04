@@ -18,17 +18,16 @@
 </template>
 
 <script>
-import { setTimeout } from "timers";
 const COLORS = ["#33c47f", "#ff6950", "#4180db", "#a061d1"];
 const CELL_SIZE = 32;
 
 export default {
+  props: ["cycles", "colorMode", "cyclesPerSecond"],
   data() {
     return {
       hearts: []
     };
   },
-  props: ["cycles", "colorMode"],
   mounted() {
     this.processes = [];
 
@@ -55,16 +54,12 @@ export default {
           CELL_SIZE,
           CELL_SIZE
         );
-    this.render(this.cycles.shift());
-    setInterval(
-      () => this.cycles.length && this.render(this.cycles.shift()),
-      0
-    );
+    this.tick();
   },
   watch: {
     colorMode() {
       this.memory.forEach(cell => (cell.needUpdate = true));
-      this.render(null);
+      this.render();
     }
   },
   computed: {
@@ -72,61 +67,84 @@ export default {
       return 1000 / this.cyclesPerSecond;
     }
   },
+  destroyed() {
+    if (this.raf) cancelAnimationFrame(this.raf);
+  },
   methods: {
-    render(actions) {
-      if (actions)
-        for (const action of actions) {
-          if (action.action === "spawn") {
-            const color =
-              action.parent !== undefined
-                ? this.processes[action.parent].color
-                : COLORS[this.processes.length];
-            this.processes.push({
-              color,
-              offset: action.offset,
-              live: true
-            });
-            this.memory[action.offset].needUpdate = true;
-          } else if (action.action === "write_memory") {
-            const color = this.processes[action.process].color;
-            for (let i = 0; i < action.memory.length; i++) {
-              const idx = (action.from + i) % 4096;
-              this.memory[idx].needUpdate = true;
-              this.memory[idx].color = color;
-              this.memory[idx].value = action.memory[i];
-            }
-          } else if (action.action === "adv") {
-            const process = this.processes[action.process];
-            this.memory[process.offset].needUpdate = true;
-            process.offset = (process.offset + action.diff) % 4096;
-            this.memory[process.offset].needUpdate = true;
-          } else if (action.action == "cycle_to_die") {
-            this.$emit("cycleDie", action.value);
-          } else if (action.action == "live") {
-            const process = this.processes[action.process];
-            this.$emit("live", action.player);
-            const heart = {
-              x: ((process.offset % 64) / 64) * 100 + 0.75 + "%",
-              y: (Math.floor(process.offset / 64) / 64) * 100 + 0.75 + "%",
-              color: "red"
-            };
-            this.hearts.push(heart);
-            setTimeout(
-              () => this.hearts.splice(this.hearts.indexOf(heart), 1),
-              1200
-            );
-          } else if (action.action == "jump") {
-            const process = this.processes[action.process];
-            this.memory[process.offset].needUpdate = true;
-            process.offset = action.offset;
-            this.memory[process.offset].needUpdate = true;
-          } else if (action.action == "die") {
-            this.memory[
-              this.processes[action.process].offset
-            ].needUpdate = true;
-            this.processes[action.process].live = false;
-          } else console.log("Unhandled", action);
-        }
+    tick(timestamp) {
+      this.raf = requestAnimationFrame(this.tick);
+      if (!this.last_cycle) this.last_cycle = timestamp;
+      const cyclesToRun = Math.floor(
+        (timestamp - this.last_cycle) / this.cycleMs
+      );
+      for (
+        let i = 0;
+        i < cyclesToRun &&
+        this.cycles.length &&
+        performance.now() - timestamp < 16;
+        i++
+      ) {
+        this.run(this.cycles.shift());
+        this.$emit("cycle");
+        this.$emit("processes", this.processes.filter(e => e.live).length);
+        this.last_cycle += this.cycleMs;
+      }
+      if (cyclesToRun) this.render();
+    },
+    run(cycle) {
+      for (const action of cycle) {
+        if (action.action === "spawn") {
+          const color =
+            action.parent !== undefined
+              ? this.processes[action.parent].color
+              : COLORS[this.processes.length];
+          this.processes.push({
+            color,
+            offset: action.offset,
+            live: true
+          });
+          this.memory[action.offset].needUpdate = true;
+        } else if (action.action === "write_memory") {
+          const color = this.processes[action.process].color;
+          for (let i = 0; i < action.memory.length; i++) {
+            const idx = (action.from + i) % 4096;
+            this.memory[idx].needUpdate = true;
+            this.memory[idx].color = color;
+            this.memory[idx].value = action.memory[i];
+          }
+        } else if (action.action === "adv") {
+          const process = this.processes[action.process];
+          this.memory[process.offset].needUpdate = true;
+          process.offset = (process.offset + action.diff) % 4096;
+          this.memory[process.offset].needUpdate = true;
+        } else if (action.action == "cycle_to_die") {
+          this.$emit("cycleDie", action.value);
+        } else if (action.action == "live") {
+          this.$emit("live", action.player);
+          /*const process = this.processes[action.process];
+          const heart = {
+            x: ((process.offset % 64) / 64) * 100 + 0.75 + "%",
+            y: (Math.floor(process.offset / 64) / 64) * 100 + 0.75 + "%",
+            color: "red"
+          };
+          this.hearts.push(heart);
+          setTimeout(
+            () => this.hearts.splice(this.hearts.indexOf(heart), 1),
+            1200
+          );*/
+        } else if (action.action == "jump") {
+          const process = this.processes[action.process];
+          this.memory[process.offset].needUpdate = true;
+          process.offset = action.offset;
+          this.memory[process.offset].needUpdate = true;
+        } else if (action.action == "die") {
+          this.memory[this.processes[action.process].offset].needUpdate = true;
+          this.processes[action.process].live = false;
+        } else if (action.action == "win") this.$emit("end");
+        else console.log("Unhandled", action);
+      }
+    },
+    render() {
       for (const [i, cell] of this.memory.entries()) {
         if (cell.needUpdate) {
           const x = i % 64;
@@ -169,10 +187,6 @@ export default {
         }
       }
       this.memory.forEach(cell => (cell.needUpdate = false));
-      if (actions) {
-        this.$emit("cycle");
-        this.$emit("processes", this.processes.length); // TODO
-      }
     }
   }
 };
