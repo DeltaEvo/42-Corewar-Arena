@@ -34,13 +34,13 @@ export default {
   },
   async mounted() {
     const folders = await fetch(
-      "https://api.github.com/repos/Tkesray/corewar/contents/?ref=championship"
+      "https://api.github.com/repos/prastoin/corewar/contents/?ref=championship"
     ).then(res => res.json());
     this.championships = await Promise.all(
       folders.map(async ({ name }) => ({
         name,
         champs: await fetch(
-          `https://api.github.com/repos/Tkesray/corewar/contents/${name}?ref=championship`
+          `https://api.github.com/repos/prastoin/corewar/contents/${name}?ref=championship`
         )
           .then(res => res.json())
           .then(folders =>
@@ -53,7 +53,7 @@ export default {
   methods: {
     selectChampion(path) {
       fetch(
-        `https://raw.githubusercontent.com/Tkesray/corewar/championship/${path}`
+        `https://raw.githubusercontent.com/prastoin/corewar/championship/${path}`
       )
         .then(res => res.arrayBuffer())
         .then(buffer => this.$emit("load", buffer));
