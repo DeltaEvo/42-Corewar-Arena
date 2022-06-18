@@ -18,12 +18,6 @@
       </ratio>
     </div>
     <section class="panel">
-      <div class="labeled-input">
-        <label>VM Version:</label>
-        <div style="width: 100%">
-          <versions v-model="version" />
-        </div>
-      </div>
       <championship-selector @load="load" />
       <RTXSwitch
         class="rtx"
@@ -38,7 +32,6 @@
 import ChampionSelector from "../ChampionSelector.vue";
 import ChampionshipSelector from "../ChampionshipSelector.vue";
 import Ratio from "../Ratio.vue";
-import Versions from "../Versions.vue";
 import RTXSwitch from "../RTXSwitch.vue";
 
 export default {
@@ -50,8 +43,7 @@ export default {
   },
   methods: {
     start() {
-      if (this.version.url) this.vm.start(this.version.url);
-      else alert("No version selected");
+      this.vm.start("/vm.wasm");
     },
     load(buffer) {
       if (this.vm.champions.length < 4) {
@@ -67,7 +59,6 @@ export default {
     ChampionSelector,
     ChampionshipSelector,
     Ratio,
-    Versions,
     RTXSwitch
   }
 };
@@ -157,17 +148,6 @@ export default {
     @media screen and (max-width: 640px) {
       width: 100%;
       height: 50%;
-    }
-    .labeled-input {
-      margin: 32px;
-      margin-bottom: 0;
-      display: flex;
-      align-items: center;
-      white-space: nowrap;
-
-      & > * {
-        padding: 0 8px;
-      }
     }
 
     & > .championships {
